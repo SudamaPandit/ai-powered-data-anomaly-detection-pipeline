@@ -1,0 +1,72 @@
+dataset:
+  name: healthcare_claims_feed
+  id_column: claim_id
+  member_column: member_id
+  amount_column: claim_amount
+  status_column: claim_status
+  timestamp_column: ingested_at
+  service_date_column: service_date
+  required_columns:
+    - claim_id
+    - member_id
+    - provider_id
+    - service_date
+    - diagnosis_code
+    - claim_amount
+    - claim_status
+    - source_system
+    - ingested_at
+  allowed_statuses:
+    - APPROVED
+    - DENIED
+    - PENDING
+
+rules:
+  duplicate_rate:
+    enabled: true
+    threshold: 0.02
+    severity: HIGH
+  null_member_rate:
+    enabled: true
+    threshold: 0.03
+    severity: HIGH
+  invalid_amount_rate:
+    enabled: true
+    threshold: 0.01
+    severity: CRITICAL
+  invalid_status_rate:
+    enabled: true
+    threshold: 0.01
+    severity: HIGH
+  invalid_timestamp_rate:
+    enabled: true
+    threshold: 0.01
+    severity: HIGH
+  freshness_hours:
+    enabled: true
+    threshold: 6.0
+    severity: CRITICAL
+  volume_drop_rate:
+    enabled: true
+    threshold: 0.30
+    severity: CRITICAL
+  mean_amount_shift_rate:
+    enabled: true
+    threshold: 0.50
+    severity: MEDIUM
+
+model:
+  features:
+    - row_count
+    - duplicate_rate
+    - null_member_rate
+    - invalid_amount_rate
+    - invalid_status_rate
+    - invalid_timestamp_rate
+    - mean_amount
+    - p95_amount
+    - freshness_hours
+  contamination: 0.05
+  random_state: 42
+  minimum_training_rows: 20
+
